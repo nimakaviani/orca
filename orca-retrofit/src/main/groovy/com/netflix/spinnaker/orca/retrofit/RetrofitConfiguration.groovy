@@ -39,6 +39,8 @@ import org.springframework.core.annotation.Order
 import retrofit.RestAdapter.LogLevel
 import retrofit.client.OkClient
 
+import java.util.concurrent.TimeUnit
+
 @Configuration
 @CompileStatic
 @Import(OkHttp3ClientConfiguration)
@@ -51,6 +53,9 @@ class RetrofitConfiguration {
                       Optional<List<RetrofitInterceptorProvider>> retrofitInterceptorProviders) {
     final String userAgent = "Spinnaker-${System.getProperty('spring.application.name', 'unknown')}/${getClass().getPackage().implementationVersion ?: '1.0'}"
     OkHttpClient.Builder builder = okHttpClientConfig.create()
+    // TODO adjust timeout for the retrofit client
+    builder.connectTimeout(30, TimeUnit.SECONDS)
+    builder.readTimeout(60, TimeUnit.SECONDS)
     builder.addNetworkInterceptor(
       new Interceptor() {
         @Override
@@ -76,6 +81,8 @@ class RetrofitConfiguration {
                     Optional<List<RetrofitInterceptorProvider>> retrofitInterceptorProviders) {
     final String userAgent = "Spinnaker-${System.getProperty('spring.application.name', 'unknown')}/${getClass().getPackage().implementationVersion ?: '1.0'}"
     def cfg = okHttpClientConfig.create()
+    // TODO - figure out a way to better extend timeout for retrofit client
+    cfg.setReadTimeout(60, TimeUnit.SECONDS)
     cfg.networkInterceptors().add(new com.squareup.okhttp.Interceptor() {
       @Override
       com.squareup.okhttp.Response intercept(com.squareup.okhttp.Interceptor.Chain chain) throws IOException {

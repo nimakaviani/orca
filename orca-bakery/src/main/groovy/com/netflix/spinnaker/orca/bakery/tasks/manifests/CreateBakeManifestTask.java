@@ -26,6 +26,7 @@ import com.netflix.spinnaker.orca.api.pipeline.models.ExecutionStatus;
 import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 import com.netflix.spinnaker.orca.bakery.api.BakeryService;
 import com.netflix.spinnaker.orca.bakery.api.manifests.BakeManifestRequest;
+import com.netflix.spinnaker.orca.bakery.api.manifests.cdk8s.CDK8SBakeManifestRequest;
 import com.netflix.spinnaker.orca.bakery.api.manifests.helm.HelmBakeManifestRequest;
 import com.netflix.spinnaker.orca.bakery.api.manifests.kustomize.KustomizeBakeManifestRequest;
 import com.netflix.spinnaker.orca.pipeline.util.ArtifactUtils;
@@ -53,7 +54,7 @@ public class CreateBakeManifestTask implements RetryableTask {
 
   @Override
   public long getTimeout() {
-    return 300000;
+    return 600000;
   }
 
   @Nullable private final BakeryService bakery;
@@ -127,7 +128,12 @@ public class CreateBakeManifestTask implements RetryableTask {
     }
 
     BakeManifestRequest request;
+    Artifact inputArtifact;
     switch (context.getTemplateRenderer().toUpperCase()) {
+      case "CDK8S":
+        inputArtifact = resolvedInputArtifacts.get(0);
+        request = new CDK8SBakeManifestRequest(context, inputArtifact, outputArtifactName);
+        break;
       case "HELM3":
       case "HELM2":
         request =
@@ -135,7 +141,7 @@ public class CreateBakeManifestTask implements RetryableTask {
                 context, resolvedInputArtifacts, outputArtifactName, overrides);
         break;
       case "KUSTOMIZE":
-        Artifact inputArtifact = resolvedInputArtifacts.get(0);
+        inputArtifact = resolvedInputArtifacts.get(0);
         request = new KustomizeBakeManifestRequest(context, inputArtifact, outputArtifactName);
         break;
       default:
