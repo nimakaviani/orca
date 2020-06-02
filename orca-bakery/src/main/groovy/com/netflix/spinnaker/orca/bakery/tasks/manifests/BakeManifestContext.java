@@ -35,6 +35,7 @@ public class BakeManifestContext {
   private final String outputName;
   private final String namespace;
   private final Boolean rawOverrides;
+  private final String language;
   @Nullable private final String kustomizeFilePath;
   // There does not seem to be a way to auto-generate a constructor using our current version of
   // Lombok (1.16.20) that
@@ -50,6 +51,7 @@ public class BakeManifestContext {
       @JsonProperty("namespace") String namespace,
       @Nullable @JsonProperty("inputArtifact") CreateBakeManifestTask.InputArtifact inputArtifact,
       @Nullable @JsonProperty("kustomizeFilePath") String kustomizeFilePath,
+      @JsonProperty("language") String language,
       @JsonProperty("rawOverrides") Boolean rawOverrides) {
     this.inputArtifacts = Optional.ofNullable(inputArtifacts).orElse(new ArrayList<>());
     // Kustomize stage configs provide a single input artifact
@@ -63,6 +65,7 @@ public class BakeManifestContext {
     this.outputName = outputName;
     this.namespace = namespace;
     this.kustomizeFilePath = kustomizeFilePath;
+    this.language = language;
     this.rawOverrides = rawOverrides;
   }
 }

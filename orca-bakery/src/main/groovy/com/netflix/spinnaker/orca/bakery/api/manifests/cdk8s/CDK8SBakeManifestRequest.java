@@ -31,7 +31,7 @@ public class CDK8SBakeManifestRequest extends BakeManifestRequest {
   private Artifact inputArtifact;
 
   @JsonProperty("language")
-  private Artifact languate;
+  private String language;
 
   public CDK8SBakeManifestRequest(
       BakeManifestContext bakeManifestContext, Artifact inputArtifact, String outputArtifactName) {
